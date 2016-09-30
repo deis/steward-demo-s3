@@ -10,7 +10,6 @@ Installation is simple. Assuming the following:
 - You have the `helm` CLI and the Tiller server running (simply `helm init` to get the latter)
 - You have a valid AWS access and and AWS secret in your environment (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, respectively)
 - Your current working directory is this folder
-- There is no `steward` namespace in your cluster
 
 ... install with this command:
 
