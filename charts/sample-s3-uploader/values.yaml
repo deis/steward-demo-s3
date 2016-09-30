@@ -8,8 +8,8 @@ Component: "s3-uploader"
 Image: "lachlanevenson/sample-s3-uploader"
 ImageTag: "latest"
 ImagePullPolicy: "Always"
-SecretName: "steward-demo"
-
+ClaimName: "s3-bucket-claim"
+SecretName: "s3-bucket-secret"
 # This should match ../s3-service-provider/values.yaml -> CfBrokerServiceId
 S3ServiceId: "98FF26D0-2E01-11E5-9184-FEFF819CDC9F"
 # This should match ../s3-service-provider/values.yaml -> CfBrokerPlanId
