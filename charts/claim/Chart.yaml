@@ -1,6 +1,6 @@
 name: claim
 version: 0.1.0
-description: sample-s3-uploader Helm chart for Kubernetes.
+description: a service plan claim to ask Steward to create a new bucket and IAM creds for it
 maintainers:
   - name: Lachlan Evenson
     email: lachlan@deis.com
