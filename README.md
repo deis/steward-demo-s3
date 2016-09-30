@@ -34,7 +34,7 @@ This chart installs the following:
 
 * A Steward [service plan claim](https://github.com/deis/steward/blob/master/doc/DATA_STRUCTURES.md#serviceplanclaim) to provision and bind (`action: create`) a new S3 bucket and IAM credentials to access that bucket
 
-# charts/sample-s3-uploader
+# charts/s3-uploader
 
 This chart installs the following:
 
@@ -52,4 +52,4 @@ In order to use these helm charts to show a start-to-finish demo of Steward's ca
 1. [s3-service-provider](./charts/s3-service-provider) - installs steward and the backing broker
 2. [claim](./charts/claim) - submits an `action: create` claim to steward, which in turn calls the CF broker
   - The CF broker creates new IAM credentials. Before proceeding past this step, wait a bit for the new creds to be pushed across regions
-3. [sample-s3-uploader](./charts/sample-s3-uploader) - installs the application that consumes the newly created bucket using the new IAM credentials
+3. [s3-uploader](./charts/s3-uploader) - installs the application that consumes the newly created bucket using the new IAM credentials

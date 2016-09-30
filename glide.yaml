@@ -1,6 +1,0 @@
-package: .
-import:
-- package: github.com/aws/aws-sdk-go
-  subpackages:
-  - aws
-  - aws/credentials
