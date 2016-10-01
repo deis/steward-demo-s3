@@ -6,7 +6,7 @@
 Name: s3-uploader
 Component: "s3-uploader"
 Image: "quay.io/lachie83/s3-uploader"
-ImageTag: "latest"
+ImageTag: "v1.0"
 ImagePullPolicy: "Always"
 ClaimName: "s3-bucket-claim"
 SecretName: "s3-bucket-secret"
