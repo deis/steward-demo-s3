@@ -1,84 +1,69 @@
 # Steward S3 Demo
 
-This repository contains helm charts intended to demo
+This repository contains make targets intended to demo
 [Steward CF](https://github.com/deis/steward-cf).
 
+The following targets are available:
 
-The following charts are available:
+# steward
 
-# charts/s3-service-provider
-
-This chart installs the following:
-
-* A configured s3-cf-broker (the broker is taken from a [CloudFoundry community implementation](https://github.com/cloudfoundry-community/s3-broker)
-* A Steward CF instance
-
-## Broker Details
-
-When an `Instance` is later created, steward-cf will call the backing CF service
-broker's provision API to create a new S3 bucket. When a `Binding` is created,
-steward-cf will call the backing CF service broker's binding API to create
-an IAM user and grant access to the aforementioned bucket.
-
-## Steward Details
-
-After a bind, steward-cf will drop the bucket-name, `AWS_ACCESS_KEY`, and
-`AWS_SECRET_KEY` into a kubernetes Secret. It will look like the following:
-
-```yaml
-kind: Secret
-apiVersion: v1
-data:
-  name: <s3 bucket name>
-  password: <AWS_SECRET_KEY>
-  username: <AWS_ACCESS_KEY>
+```
+$ make steward
 ```
 
-# charts/broker
+This target will create a `steward` namespace and install the Steward service
+catalog controller into it.
 
-This chart installs a `Broker` resource, which tells `steward-cf` to connect to
-the backing S3 CF service broker API, list its catalog, and write a
-`ServiceClass` resource for each service therein
+# broker
 
-# charts/instance
+```
+$ make broker
+```
 
-This chart installs an `Instance` resource, which tells `steward-cf` to make a
-provision API call on the backing S3 CF broker API. This call in turn creates
-a new S3 bucket.
+This target will create an `s3-broker` namespace and install a service broker
+into it. This particular service broker is for provisioning s3 buckets.
 
-# charts/binding
+When both Steward and the broker are observed to be running, the target
+will also register the broker with Steward by creating a `ServiceClass`. In
+response, Steward will query the broker to learn what services and service plans
+it offers. Steward will use these to add a `ServiceClass` to the service catalog.
+The `ServiceClass` contains service and service plan details.
 
-This chart installs a `Binding` resource, which tells `steward-cf` to make a
-bind API call on the backing S3 CF broker API. This call in turn creates new IAM
-credentials which get written into a secret called `s3-demo-secret`, in the same
-namespace as the `Binding` itself.
+Because of its interaction with AWS, this broker requires the following
+environment variables be defined to convey AWS credentials:
 
-# charts/s3-uploader
+* `AWS_ACCESS_KEY_ID`
+* `AWS_SECRET_ACCESS_KEY`
 
-This chart installs a job that consumes the secret output from the charts/binding
-chart, connects to the S3 bucket described in the secret, and uploads a jpeg
-image to the bucket.
+If these environment variables are left unset, the target will detect that and
+fail fast.
 
+# consumer
 
-# Prerequisites
+```
+$ make broker
+```
 
-You must have AWS credentials with full S3 and IAM access. The access key
-should be stored in the `AWS_ACCESS_KEY_ID` environment variable, and the secret
- should be stored in the `AWS_SECRET_ACCESS_KEY` environment variable.
+This target will create an example consumer that uploads a single image to
+an s3 bucket. Naturally, this requires that a bucket exist and that the consumer
+has credentials for writing to that bucket.
 
-# Demo
+This target:
 
-In order to use these helm charts to show a start-to-finish demo of Steward's capability, install the following charts in order:
+* Creates a `ServiceInstance` to effect provisioning of a new s3 bucket. This
+  references the `ServiceClass` that was created when the broker was registered
+  with Steward.
+* Creates a `ServiceBinding` to provision credentials for that bucket. This
+  references the provisioned bucket via the `ServiceInstance` created above.
+  Steward will automatically inject the credentials into a `Secret`.
+* Creates a `Job` that mounts the `Secret` created above and uses the
+  credentials within to upload an image to the s3 bucket.
 
-1. [s3-service-provider](./charts/s3-service-provider) to install the backing CF service broker
-1. [steward-cf](.charts/steward-cf) to install steward-cf
-1. [servicebroker](./charts/servicebroker) to install the `ServiceBroker` resource
-  - After this step, a list of `ServiceClass` resources should be written to
-  the `steward` namespace
-1. [serviceinstance](./charts/serviceinstance) to install the `ServiceInstance` resource
-  - After this step, an S3 bucket should be provisioned in response to the creation of that
-  resource
-1. [servicebinding](./charts/servicebinding) to install the `ServiceBinding` resource
-  - After this step, a secret called `s3-demo-secret` should be written to the
-  same namespace as the `ServiceBinding` resource itself
-1. [s3-uploader](./charts/s3-uploader) to run the uploader job
+# clean-*
+
+You can remove all of or parts of the demo using the following targets:
+
+* `clean`
+* `clean-consumer`
+* `clean-broker`
+* `clean-steward`

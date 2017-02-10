@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: s3-uploader
+  namespace: default
+spec:
+  template:
+    metadata:
+        name: s3-uploader
+    spec:
+      containers:
+      - name: s3-uploader
+        image: quay.io/lachie83/s3-uploader:v1.0
+        imagePullPolicy: Always
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: my-s3-bucket-creds
+              key: username
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: my-s3-bucket-creds
+              key: password
+        - name: S3_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: my-s3-bucket-creds
+              key: name
+      restartPolicy: Never

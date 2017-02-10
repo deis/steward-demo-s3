@@ -1,6 +1,0 @@
-name: s3-uploader
-version: 0.1.0
-description: s3-uploader Helm chart for Kubernetes.
-maintainers:
-  - name: Deis Engineering
-    email: engineering@deis.com

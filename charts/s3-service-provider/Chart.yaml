@@ -1,6 +1,0 @@
-name: s3-service-provider
-version: 0.1.0
-description: An S3 service provider for use with Steward CF
-maintainers:
-  - name: Deis Engineering
-    email: engineering@deis.com

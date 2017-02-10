@@ -1,0 +1,12 @@
+kind: ServiceBinding
+apiVersion: steward.deis.io/v1
+metadata:
+  name: my-s3-bucket-binding
+  namespace: default
+spec:
+  id: #binding-uuid#
+  service_instance_ref:
+    kind: Instance
+    namespace: default
+    name: my-s3-bucket
+  secret_name: my-s3-bucket-creds

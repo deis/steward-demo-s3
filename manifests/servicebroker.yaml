@@ -1,0 +1,9 @@
+kind: ServiceBroker
+apiVersion: steward.deis.io/v1
+metadata:
+  name: s3-broker
+  namespace: steward
+spec:
+  url: http://s3-broker.s3-broker.svc.cluster.local:3000
+  username: username
+  password: password

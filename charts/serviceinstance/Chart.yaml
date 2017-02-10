@@ -1,6 +1,0 @@
-name: serviceinstance
-version: 0.1.0
-description: An ServiceInstance definition for provisioning an S3 bucket
-maintainers:
-  - name: Deis Engineering
-    email: engineering@deis.com
