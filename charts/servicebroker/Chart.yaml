@@ -1,6 +1,0 @@
-name: servicebroker
-version: 0.1.0
-description: A ServiceBroker definition for connecting Steward CF to the S3 service provider
-maintainers:
-  - name: Deis Engineering
-    email: engineering@deis.com

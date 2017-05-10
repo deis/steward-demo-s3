@@ -1,0 +1,4 @@
+manifests/s3-service-provider.yaml
+manifests/s3-service-provider.yaml.bak
+manifests/serviceinstance.yaml
+manifests/servicebinding.yaml

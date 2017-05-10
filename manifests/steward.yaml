@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: steward
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: steward
+  namespace: steward
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: steward
+      labels:
+        app: steward
+    spec:
+      containers:
+      - name: flippant-marsupial-stewa
+        image: quay.io/deisci/steward-cf:devel
+        imagePullPolicy: Always
+        env:
+        - name: LOG_LEVEL
+          value: trace
+        - name: API_PORT
+          value: "8080"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          failureThreshold: 3
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2

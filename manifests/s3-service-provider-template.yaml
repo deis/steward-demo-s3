@@ -1,30 +1,29 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: s3-broker
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ .Release.Name }}-s3-broker-config"
-  annotations:
-    "helm.sh/created": {{.Release.Time.Seconds | quote }}
-  labels:
-    heritage: {{.Release.Service | quote }}
-    release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{.Release.Name}}-s3-broker"
+  name: s3-broker-config
+  namespace: s3-broker
 data:
   s3-broker-config.json: >
     {
       "log_level": "DEBUG",
-      "username": "{{.Values.Username}}",
-      "password": "{{.Values.Password}}",
+      "username": "username",
+      "password": "password",
       "s3_config": {
         "region": "us-east-1",
-        "bucket_prefix": "{{.Values.BucketPrefix}}",
+        "bucket_prefix": "my",
         "allow_user_provision_parameters": false,
         "allow_user_update_parameters": false,
         "catalog": {
           "services": [
             {
-              "id": "{{.Values.ServiceId}}",
-              "name": "{{.Values.ServiceName}}",
+              "id": "98FF26D0-2E01-11E5-9184-FEFF819CDC9F",
+              "name": "bucket",
               "description": "Amazon Simple Storage Service (S3)",
               "bindable": true,
               "tags": [
@@ -43,8 +42,8 @@ data:
               "plan_updateable": false,
               "plans": [
                 {
-                  "id": "{{.Values.PlanId}}",
-                  "name": "{{.Values.PlanName}}",
+                  "id": "eaad05d8-2e01-11e5-9184-feff819cdc9f",
+                  "name": "standard",
                   "description": "Provides a single S3 bucket with unlimited storage.",
                   "metadata": {
                     "costs": [
@@ -70,3 +69,61 @@ data:
         }
       }
     }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-broker-creds
+  namespace: s3-broker
+data:
+  aws-access-key-id: #aws-access-key-id#
+  aws-secret-access-key: #aws-secret-access-key#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3-broker
+  namespace: s3-broker
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: s3-broker
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: s3-broker
+  namespace: s3-broker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: s3-broker
+      labels:
+        app: s3-broker
+    spec:
+      containers:
+      - name: s3-broker
+        image: lachlanevenson/s3-broker:latest
+        imagePullPolicy: Always
+        command: ["/s3-broker", "--config=/config/s3-broker-config.json"]
+        volumeMounts:
+        - mountPath: /config
+          name: config-volume
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: s3-broker-creds
+              key: aws-access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-broker-creds
+              key: aws-secret-access-key
+      volumes:
+        - name: config-volume
+          configMap:
+            name: s3-broker-config
